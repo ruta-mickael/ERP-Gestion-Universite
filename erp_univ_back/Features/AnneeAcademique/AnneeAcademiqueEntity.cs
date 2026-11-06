@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using erp_univ_back.Features.ConfigFinancier;
 using erp_univ_back.Features.Etablissement;
+using erp_univ_back.Features.Evaluation;
 using erp_univ_back.Features.Inscription;
 using erp_univ_back.Shared.Entities;
 
@@ -25,5 +26,6 @@ namespace erp_univ_back.Features.AnneeAcademique
 
         public ICollection<InscriptionEntity> Inscriptions { get; set; } = [];
         public ICollection<FraisCatalogueEntity> FraisCatalogues { get; set; } = [];
+        public ICollection<EvaluationEntity> Evaluations { get; set; } = [];
     }
 }

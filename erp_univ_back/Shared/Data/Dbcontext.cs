@@ -5,6 +5,7 @@ using erp_univ_back.Features.AnneeAcademique;
 using erp_univ_back.Features.ConfigFinancier;
 using erp_univ_back.Features.Etablissement;
 using erp_univ_back.Features.Etudiant;
+using erp_univ_back.Features.Evaluation;
 using erp_univ_back.Features.Filiere;
 using erp_univ_back.Features.FiliereNiveau;
 using erp_univ_back.Features.Inscription;
@@ -38,6 +39,10 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
     public DbSet<ModeleTrancheEntity> ModelesTranches { get; set; } = null!;
     public DbSet<EcheanceEtudiantEntity> EcheancesEtudiant { get; set; } = null!;
     public DbSet<TransactionPaiementEntity> TransactionsPaiement { get; set; } = null!;
+
+    // --- Module Évaluation & Notes ---
+    public DbSet<EvaluationEntity> Evaluations { get; set; } = null!;
+    public DbSet<NoteEntity> Notes { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -477,6 +482,80 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
 
             e.HasOne(x => x.Etudiant)
                 .WithMany(x => x.TransactionsPaiement)
+                .HasForeignKey(x => x.EtudiantId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // --- Module Évaluation & Notes ---
+        mb.Entity<EvaluationEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
+
+            e.Property(x => x.Titre).HasMaxLength(150);
+            e.Property(x => x.TypeEvaluation).HasConversion<string>().HasMaxLength(40);
+            e.Property(x => x.Session).HasConversion<string>().HasMaxLength(30);
+            e.Property(x => x.Bareme).HasColumnType("decimal(5,2)").HasDefaultValue(20.00m);
+            e.Property(x => x.Poids).HasColumnType("decimal(5,2)").HasDefaultValue(1.00m);
+            e.Property(x => x.DateEvaluation).IsRequired();
+
+            e.HasIndex(x => new { x.EtablissementId, x.MatiereId, x.FiliereNiveauId, x.AnneeAcademiqueId });
+
+            e.HasOne(x => x.Etablissement)
+                .WithMany(x => x.Evaluations)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Matiere)
+                .WithMany(x => x.Evaluations)
+                .HasForeignKey(x => x.MatiereId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.FiliereNiveau)
+                .WithMany(x => x.Evaluations)
+                .HasForeignKey(x => x.FiliereNiveauId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.AnneeAcademique)
+                .WithMany(x => x.Evaluations)
+                .HasForeignKey(x => x.AnneeAcademiqueId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Professeur)
+                .WithMany(x => x.Evaluations)
+                .HasForeignKey(x => x.ProfesseurId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        mb.Entity<NoteEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
+
+            e.Property(x => x.Valeur).HasColumnType("decimal(5,2)");
+            e.Property(x => x.EstAbsent).HasDefaultValue(false);
+            e.Property(x => x.Commentaire).HasMaxLength(250);
+
+            // Un étudiant ne peut avoir qu'une seule note par évaluation au sein d'un même établissement
+            e.HasIndex(x => new { x.EtablissementId, x.EvaluationId, x.EtudiantId }).IsUnique();
+
+            e.HasOne(x => x.Etablissement)
+                .WithMany(x => x.Notes)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Evaluation)
+                .WithMany(x => x.Notes)
+                .HasForeignKey(x => x.EvaluationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Inscription)
+                .WithMany(x => x.Notes)
+                .HasForeignKey(x => x.InscriptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Etudiant)
+                .WithMany(x => x.Notes)
                 .HasForeignKey(x => x.EtudiantId)
                 .OnDelete(DeleteBehavior.Restrict);
         });

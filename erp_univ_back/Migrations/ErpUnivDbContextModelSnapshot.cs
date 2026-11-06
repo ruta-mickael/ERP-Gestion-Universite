@@ -421,6 +421,125 @@ namespace erp_univ_back.Migrations
                     b.ToTable("parents");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.Evaluation.EvaluationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AnneeAcademiqueId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Bareme")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(20.00m);
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateEvaluation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EtablissementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FiliereNiveauId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MatiereId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Poids")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(1.00m);
+
+                    b.Property<Guid?>("ProfesseurId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Session")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("Titre")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("TypeEvaluation")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnneeAcademiqueId");
+
+                    b.HasIndex("FiliereNiveauId");
+
+                    b.HasIndex("MatiereId");
+
+                    b.HasIndex("ProfesseurId");
+
+                    b.HasIndex("EtablissementId", "MatiereId", "FiliereNiveauId", "AnneeAcademiqueId");
+
+                    b.ToTable("evaluations");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.Evaluation.NoteEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Commentaire")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("EstAbsent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("EtablissementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EtudiantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EvaluationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("InscriptionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Valeur")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtudiantId");
+
+                    b.HasIndex("EvaluationId");
+
+                    b.HasIndex("InscriptionId");
+
+                    b.HasIndex("EtablissementId", "EvaluationId", "EtudiantId")
+                        .IsUnique();
+
+                    b.ToTable("notes");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Filiere.FiliereEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1058,6 +1177,83 @@ namespace erp_univ_back.Migrations
                     b.Navigation("Etablissement");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.Evaluation.EvaluationEntity", b =>
+                {
+                    b.HasOne("erp_univ_back.Features.AnneeAcademique.AnneeAcademiqueEntity", "AnneeAcademique")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("AnneeAcademiqueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("EtablissementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.FiliereNiveau.FiliereNiveauEntity", "FiliereNiveau")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("FiliereNiveauId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Matiere.MatiereEntity", "Matiere")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("MatiereId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Professeur.ProfesseurEntity", "Professeur")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("ProfesseurId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AnneeAcademique");
+
+                    b.Navigation("Etablissement");
+
+                    b.Navigation("FiliereNiveau");
+
+                    b.Navigation("Matiere");
+
+                    b.Navigation("Professeur");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.Evaluation.NoteEntity", b =>
+                {
+                    b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
+                        .WithMany("Notes")
+                        .HasForeignKey("EtablissementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Etudiant.EtudiantEntity", "Etudiant")
+                        .WithMany("Notes")
+                        .HasForeignKey("EtudiantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Evaluation.EvaluationEntity", "Evaluation")
+                        .WithMany("Notes")
+                        .HasForeignKey("EvaluationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Inscription.InscriptionEntity", "Inscription")
+                        .WithMany("Notes")
+                        .HasForeignKey("InscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Etablissement");
+
+                    b.Navigation("Etudiant");
+
+                    b.Navigation("Evaluation");
+
+                    b.Navigation("Inscription");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Filiere.FiliereEntity", b =>
                 {
                     b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
@@ -1254,6 +1450,8 @@ namespace erp_univ_back.Migrations
 
             modelBuilder.Entity("erp_univ_back.Features.AnneeAcademique.AnneeAcademiqueEntity", b =>
                 {
+                    b.Navigation("Evaluations");
+
                     b.Navigation("FraisCatalogues");
 
                     b.Navigation("Inscriptions");
@@ -1279,6 +1477,8 @@ namespace erp_univ_back.Migrations
 
                     b.Navigation("Etudiants");
 
+                    b.Navigation("Evaluations");
+
                     b.Navigation("FiliereNiveaux");
 
                     b.Navigation("Filieres");
@@ -1292,6 +1492,8 @@ namespace erp_univ_back.Migrations
                     b.Navigation("ModelesTranches");
 
                     b.Navigation("Niveaux");
+
+                    b.Navigation("Notes");
 
                     b.Navigation("Parents");
 
@@ -1310,12 +1512,19 @@ namespace erp_univ_back.Migrations
 
                     b.Navigation("Inscriptions");
 
+                    b.Navigation("Notes");
+
                     b.Navigation("TransactionsPaiement");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.Etudiant.ParentEntity", b =>
                 {
                     b.Navigation("EtudiantParents");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.Evaluation.EvaluationEntity", b =>
+                {
+                    b.Navigation("Notes");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.Filiere.FiliereEntity", b =>
@@ -1327,6 +1536,8 @@ namespace erp_univ_back.Migrations
 
             modelBuilder.Entity("erp_univ_back.Features.FiliereNiveau.FiliereNiveauEntity", b =>
                 {
+                    b.Navigation("Evaluations");
+
                     b.Navigation("Inscriptions");
 
                     b.Navigation("UniteEnseignements");
@@ -1336,7 +1547,14 @@ namespace erp_univ_back.Migrations
                 {
                     b.Navigation("Echeances");
 
+                    b.Navigation("Notes");
+
                     b.Navigation("TransactionsPaiement");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.Matiere.MatiereEntity", b =>
+                {
+                    b.Navigation("Evaluations");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.Niveau.CycleEntity", b =>
@@ -1351,6 +1569,11 @@ namespace erp_univ_back.Migrations
                     b.Navigation("FiliereNiveaux");
 
                     b.Navigation("FraisCatalogues");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.Professeur.ProfesseurEntity", b =>
+                {
+                    b.Navigation("Evaluations");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.UniteEnseignement.UniteEnseignementEntity", b =>

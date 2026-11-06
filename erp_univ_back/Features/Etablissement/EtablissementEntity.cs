@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using erp_univ_back.Features.AnneeAcademique;
 using erp_univ_back.Features.ConfigFinancier;
 using erp_univ_back.Features.Etudiant;
+using erp_univ_back.Features.Evaluation;
 using erp_univ_back.Features.Filiere;
 using erp_univ_back.Features.FiliereNiveau;
 using erp_univ_back.Features.Inscription;
@@ -84,5 +85,7 @@ namespace erp_univ_back.Features.Etablissement
         public ICollection<ModeleTrancheEntity> ModelesTranches { get; set; } = [];
         public ICollection<EcheanceEtudiantEntity> EcheancesEtudiant { get; set; } = [];
         public ICollection<TransactionPaiementEntity> TransactionsPaiement { get; set; } = [];
+        public ICollection<EvaluationEntity> Evaluations { get; set; } = [];
+        public ICollection<NoteEntity> Notes { get; set; } = [];
     }
 }

@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using erp_univ_back.Features.AnneeAcademique;
 using erp_univ_back.Features.Etablissement;
 using erp_univ_back.Features.Etudiant;
+using erp_univ_back.Features.Evaluation;
 using erp_univ_back.Features.FiliereNiveau;
 using erp_univ_back.Features.Paiement;
 using erp_univ_back.Shared.Entities;
@@ -53,4 +54,5 @@ public class InscriptionEntity : BaseEntity
 
     public ICollection<EcheanceEtudiantEntity> Echeances { get; set; } = [];
     public ICollection<TransactionPaiementEntity> TransactionsPaiement { get; set; } = [];
+    public ICollection<NoteEntity> Notes { get; set; } = [];
 }
