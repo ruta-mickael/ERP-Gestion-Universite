@@ -44,7 +44,18 @@ public class InscriptionMapping : IRegister
             .Map(dest => dest.AnneeAcademiqueId, src => src.AnneeAcademiqueId)
             .Map(dest => dest.AnneeAcademiqueLibelle, src => src.AnneeAcademique.Libelle)
             .Map(dest => dest.Statut, src => src.Statut)
-            .Map(dest => dest.DateCreation, src => src.DateCreation);
+            .Map(dest => dest.DateCreation, src => src.DateCreation)
+            .Map(dest => dest.Echeances, src => src.Echeances.Select(e => new EcheanceItemResponse(
+                e.Id,
+                e.FraisCatalogueId,
+                e.Libelle,
+                e.NumeroOrdre,
+                e.MontantAttendu,
+                e.MontantDejaPaye,
+                e.DateLimite,
+                e.ExigePourValiderInscription,
+                e.Statut
+            )).ToList());
 
         config.NewConfig<InscriptionEntity, GetInscriptionsByClasseResponse>()
             .Map(dest => dest.Id, src => src.Id)

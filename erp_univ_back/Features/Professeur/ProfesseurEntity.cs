@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using erp_univ_back.Shared.Entities;
 using erp_univ_back.Features.Etablissement;
+using erp_univ_back.Features.Evaluation;
 
 namespace erp_univ_back.Features.Professeur
 {
@@ -39,5 +40,7 @@ namespace erp_univ_back.Features.Professeur
 
         public required Guid EtablissementId { get; set; }
         public EtablissementEntity Etablissement { get; set; } = null!;
+
+        public ICollection<EvaluationEntity> Evaluations { get; set; } = [];
     }
 }
