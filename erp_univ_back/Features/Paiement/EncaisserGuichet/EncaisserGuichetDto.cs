@@ -37,17 +37,3 @@ public record EncaisserGuichetResponse(
     List<EcheanceVentileeResponse> Echeances,
     DateTime DatePaiement
 );
-
-public record SituationFinanciereEtudiantResponse(
-    Guid InscriptionId,
-    Guid EtudiantId,
-    string Matricule,
-    string NomComplet,
-    string ClasseLibelle,
-    string AnneeAcademiqueLibelle,
-    StatutInscription StatutInscription,
-    decimal TotalAttendu,
-    decimal TotalPaye,
-    decimal ResteAPayerTotal,
-    List<EcheanceVentileeResponse> Echeances
-);

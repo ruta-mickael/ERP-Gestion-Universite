@@ -16,13 +16,5 @@ public class SoumettreMobileMoneyController(ISoumettreMobileMoneyService service
         var response = await service.ExecuteAsync(request, ct);
         return Ok(response);
     }
-
-    [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(SoumettreMobileMoneyResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObtenirParId([FromRoute] Guid id, CancellationToken ct)
-    {
-        var response = await service.ObtenirParIdAsync(id, ct);
-        return Ok(response);
-    }
 }
+

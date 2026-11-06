@@ -14,6 +14,7 @@ using erp_univ_back.Features.Etudiant.Create;
 using erp_univ_back.Features.Filiere.Create;
 using erp_univ_back.Features.FiliereNiveau.Create;
 using erp_univ_back.Features.Inscription;
+using erp_univ_back.Features.Inscription.GetSituationFinanciere;
 using erp_univ_back.Features.Inscription.Register;
 using erp_univ_back.Features.Niveau.Create;
 using erp_univ_back.Features.Paiement.EncaisserGuichet;

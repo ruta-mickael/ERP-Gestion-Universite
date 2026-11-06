@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 public interface ISoumettreMobileMoneyService
 {
     Task<SoumettreMobileMoneyResponse> ExecuteAsync(SoumettreMobileMoneyRequest request, CancellationToken ct = default);
-    Task<SoumettreMobileMoneyResponse> ObtenirParIdAsync(Guid id, CancellationToken ct = default);
 }
 
 public class SoumettreMobileMoneyService(
@@ -131,44 +130,6 @@ public class SoumettreMobileMoneyService(
             PreuveImageUrl: transaction.PreuveImageUrl,
             DateSoumission: transaction.DateCreation,
             Message: "Paiement déclaré avec succès. Il est en attente de vérification par le service de comptabilité."
-        );
-    }
-
-    public async Task<SoumettreMobileMoneyResponse> ObtenirParIdAsync(Guid id, CancellationToken ct = default)
-    {
-        var transaction = await db.TransactionsPaiement
-            .Include(t => t.Etudiant)
-            .Include(t => t.Inscription)
-            .FirstOrDefaultAsync(t => t.Id == id, ct)
-            ?? throw new NotFoundException($"La transaction avec l'identifiant '{id}' n'existe pas.");
-
-        var nomComplet = string.IsNullOrWhiteSpace(transaction.Etudiant.Prenom)
-            ? transaction.Etudiant.Nom
-            : $"{transaction.Etudiant.Nom} {transaction.Etudiant.Prenom}".Trim();
-
-        var message = transaction.StatutValidation switch
-        {
-            StatutValidationPaiement.EnAttenteVerification => "Transaction en attente de vérification par la comptabilité.",
-            StatutValidationPaiement.Valide => "Transaction vérifiée et validée.",
-            StatutValidationPaiement.Rejete => $"Transaction rejetée. Motif : {transaction.MotifRejet}",
-            _ => "Statut inconnu"
-        };
-
-        return new SoumettreMobileMoneyResponse(
-            TransactionId: transaction.Id,
-            InscriptionId: transaction.InscriptionId,
-            EtudiantId: transaction.EtudiantId,
-            EtudiantMatricule: transaction.Etudiant.Matricule,
-            EtudiantNomComplet: nomComplet,
-            Montant: transaction.Montant,
-            MoyenPaiement: transaction.MoyenPaiement,
-            NomBanque: transaction.NomBanque,
-            ReferenceExterne: transaction.ReferenceExterne ?? string.Empty,
-            DateOperationDeclaree: transaction.DateOperationDeclaree,
-            StatutValidation: transaction.StatutValidation,
-            PreuveImageUrl: transaction.PreuveImageUrl,
-            DateSoumission: transaction.DateCreation,
-            Message: message
         );
     }
 }
