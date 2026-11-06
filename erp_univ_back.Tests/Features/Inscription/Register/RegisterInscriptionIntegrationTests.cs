@@ -292,5 +292,81 @@ public class RegisterInscriptionIntegrationTests : IClassFixture<WebApplicationF
         // Assert : La classe d'Etab 1 est invisible pour Etab 2 -> 404
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Register_DoitGenererEcheancesEtPasserEnAttentePaiement_QuandPlanChoisiAvecTrancheExigee()
+    {
+        // Arrange
+        var etablissementId = await CreerEtablissementAsync();
+        var classe = await CreerClasseAsync(etablissementId, "INF", "L1");
+        var annee = await CreerAnneeAcademiqueAsync(etablissementId, "2025-2026", estActive: true);
+
+        // 1. Créer un Frais Catalogue (ex: Écolage L1 = 1 200 000 Ar)
+        var fraisReq = new erp_univ_back.Features.ConfigFinancier.CreateCatalogue.CreateCatalogueRequest(
+            AnneeAcademiqueId: annee.Id,
+            Categorie: erp_univ_back.Features.ConfigFinancier.CategorieFrais.FraisFormation,
+            Libelle: "Écolage L1 Info",
+            MontantTotal: 1200000.00m,
+            MoyensPaiementAutorises: erp_univ_back.Features.ConfigFinancier.MoyenPaiement.MobileMoney,
+            FiliereId: classe.FiliereId,
+            NiveauId: classe.NiveauId
+        );
+        using var fraisMsg = new HttpRequestMessage(HttpMethod.Post, "/api/frais-catalogue");
+        fraisMsg.Headers.Add("X-EtablissementId", etablissementId.ToString());
+        fraisMsg.Content = JsonContent.Create(fraisReq);
+        var fraisRes = await _http.SendAsync(fraisMsg);
+        fraisRes.StatusCode.Should().Be(HttpStatusCode.Created);
+        var frais = await fraisRes.Content.ReadFromJsonAsync<erp_univ_back.Features.ConfigFinancier.CreateCatalogue.CreateCatalogueResponse>(_jsonOptions);
+
+        // 2. Créer un Plan de Paiement en 2 tranches
+        var planReq = new erp_univ_back.Features.ConfigFinancier.AddPlanPaiement.AddPlanPaiementRequest(
+            FraisCatalogueId: frais!.Id,
+            Nom: "Plan Semestriel 2x",
+            Tranches:
+            [
+                new erp_univ_back.Features.ConfigFinancier.AddPlanPaiement.ModeleTrancheItemRequest(1, "Tranche 1", 600000.00m, DateTime.UtcNow.AddDays(30), true),
+                new erp_univ_back.Features.ConfigFinancier.AddPlanPaiement.ModeleTrancheItemRequest(2, "Tranche 2", 600000.00m, DateTime.UtcNow.AddDays(120), false)
+            ]
+        );
+        using var planMsg = new HttpRequestMessage(HttpMethod.Post, "/api/plans-paiement");
+        planMsg.Headers.Add("X-EtablissementId", etablissementId.ToString());
+        planMsg.Content = JsonContent.Create(planReq);
+        var planRes = await _http.SendAsync(planMsg);
+        planRes.StatusCode.Should().Be(HttpStatusCode.Created);
+        var plan = await planRes.Content.ReadFromJsonAsync<erp_univ_back.Features.ConfigFinancier.AddPlanPaiement.AddPlanPaiementResponse>(_jsonOptions);
+
+        // 3. Inscription de l'étudiant avec ce plan choisi
+        var etudiantInfos = GetValidEtudiantRequest("JeanFinancier");
+        var inscriptionReq = new RegisterInscriptionRequest(
+            EtudiantInfos: etudiantInfos,
+            IdFiliereNiveau: classe.Id,
+            IdAnneeAcademique: annee.Id,
+            PlansPaiementIds: [plan!.Id]
+        );
+
+        using var inscMsg = new HttpRequestMessage(HttpMethod.Post, "/api/inscriptions/register");
+        inscMsg.Headers.Add("X-EtablissementId", etablissementId.ToString());
+        inscMsg.Content = JsonContent.Create(inscriptionReq);
+
+        // Act
+        var response = await _http.SendAsync(inscMsg);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var created = await response.Content.ReadFromJsonAsync<RegisterInscriptionResponse>(_jsonOptions);
+        created.Should().NotBeNull();
+        created!.Statut.Should().Be(StatutInscription.EnAttentePaiement);
+        created.Echeances.Should().HaveCount(2);
+
+        var tranche1 = created.Echeances.First(e => e.NumeroOrdre == 1);
+        tranche1.MontantAttendu.Should().Be(600000.00m);
+        tranche1.MontantDejaPaye.Should().Be(0m);
+        tranche1.ExigePourValiderInscription.Should().BeTrue();
+        tranche1.Statut.Should().Be(StatutEcheance.NonPaye);
+
+        var tranche2 = created.Echeances.First(e => e.NumeroOrdre == 2);
+        tranche2.MontantAttendu.Should().Be(600000.00m);
+        tranche2.ExigePourValiderInscription.Should().BeFalse();
+    }
 }
 
