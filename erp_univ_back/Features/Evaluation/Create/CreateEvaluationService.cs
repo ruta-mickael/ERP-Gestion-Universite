@@ -113,6 +113,7 @@ public class CreateEvaluationService(
             anneeAcademique.Libelle,
             professeur?.Id,
             professeurNomComplet,
+            evaluation.EstVerrouillee,
             evaluation.DateCreation
         );
     }

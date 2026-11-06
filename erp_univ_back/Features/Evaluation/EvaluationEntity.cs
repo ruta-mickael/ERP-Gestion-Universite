@@ -27,6 +27,10 @@ public class EvaluationEntity : BaseEntity
     [Column(TypeName = "decimal(5,2)")]
     public decimal Poids { get; set; } = 1.00m;
 
+    public bool EstVerrouillee { get; set; } = false;
+
+    public DateTime? DateVerrouillage { get; set; }
+
     public Guid MatiereId { get; set; }
     public MatiereEntity Matiere { get; set; } = null!;
 

@@ -444,6 +444,14 @@ namespace erp_univ_back.Migrations
                     b.Property<DateTime>("DateModification")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DateVerrouillage")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("EstVerrouillee")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<Guid>("EtablissementId")
                         .HasColumnType("uuid");
 

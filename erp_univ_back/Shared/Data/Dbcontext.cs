@@ -497,6 +497,7 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
             e.Property(x => x.Session).HasConversion<string>().HasMaxLength(30);
             e.Property(x => x.Bareme).HasColumnType("decimal(5,2)").HasDefaultValue(20.00m);
             e.Property(x => x.Poids).HasColumnType("decimal(5,2)").HasDefaultValue(1.00m);
+            e.Property(x => x.EstVerrouillee).HasDefaultValue(false);
             e.Property(x => x.DateEvaluation).IsRequired();
 
             e.HasIndex(x => new { x.EtablissementId, x.MatiereId, x.FiliereNiveauId, x.AnneeAcademiqueId });

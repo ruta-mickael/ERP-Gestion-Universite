@@ -30,5 +30,6 @@ public record CreateEvaluationResponse(
     string AnneeAcademiqueLibelle,
     Guid? ProfesseurId,
     string? ProfesseurNomComplet,
+    bool EstVerrouillee,
     DateTime DateCreation
 );
