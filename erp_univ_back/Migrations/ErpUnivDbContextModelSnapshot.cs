@@ -59,6 +59,146 @@ namespace erp_univ_back.Migrations
                     b.ToTable("AnneeAcademiques");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.FraisCatalogueEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AnneeAcademiqueId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Categorie")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("Cible")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("EstObligatoirePourDossier")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("EtablissementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FiliereNiveauId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Libelle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<decimal>("MontantTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MoyensPaiementAutorises")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnneeAcademiqueId");
+
+                    b.HasIndex("EtablissementId");
+
+                    b.HasIndex("FiliereNiveauId");
+
+                    b.ToTable("frais_catalogue");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.ModeleTrancheEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateLimite")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EtablissementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("ExigePourValiderInscription")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Libelle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<decimal>("Montant")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("NumeroOrdre")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("PlanPaiementId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtablissementId");
+
+                    b.HasIndex("PlanPaiementId");
+
+                    b.ToTable("modeles_tranches");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.PlanPaiementEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("EstActif")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("EtablissementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FraisCatalogueId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("NombreTranches")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtablissementId");
+
+                    b.HasIndex("FraisCatalogueId");
+
+                    b.ToTable("plans_paiement");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Etablissement.EtablissementEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -218,8 +358,8 @@ namespace erp_univ_back.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
@@ -294,15 +434,16 @@ namespace erp_univ_back.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.Property<Guid>("EtablissementId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Nom")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -349,6 +490,65 @@ namespace erp_univ_back.Migrations
                     b.ToTable("filiere_niveaux");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.Inscription.EcheanceEtudiantEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateLimite")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EtablissementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("ExigePourValiderInscription")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("FraisCatalogueId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("InscriptionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Libelle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<decimal>("MontantAttendu")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MontantDejaPaye")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int>("NumeroOrdre")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Statut")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtablissementId");
+
+                    b.HasIndex("FraisCatalogueId");
+
+                    b.HasIndex("InscriptionId");
+
+                    b.ToTable("echeances_etudiant");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Inscription.InscriptionEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -375,8 +575,13 @@ namespace erp_univ_back.Migrations
 
                     b.Property<string>("Statut")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("TypeInscription")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.HasKey("Id");
 
@@ -440,8 +645,8 @@ namespace erp_univ_back.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("timestamp with time zone");
@@ -466,6 +671,81 @@ namespace erp_univ_back.Migrations
                         .IsUnique();
 
                     b.ToTable("niveaux");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.Paiement.TransactionPaiementEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateOperationDeclaree")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DateValidation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DonneesExtraitesIaJson")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("EtablissementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EtudiantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("InscriptionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Montant")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("MotifRejet")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("MoyenPaiement")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("NomBanque")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PreuveImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ReferenceExterne")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("StatutValidation")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<Guid?>("VerifieParUtilisateurId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtudiantId");
+
+                    b.HasIndex("InscriptionId");
+
+                    b.HasIndex("EtablissementId", "MoyenPaiement", "NomBanque", "ReferenceExterne")
+                        .IsUnique()
+                        .HasFilter("\"ReferenceExterne\" IS NOT NULL");
+
+                    b.ToTable("transactions_paiement");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.Professeur.ProfesseurEntity", b =>
@@ -587,6 +867,70 @@ namespace erp_univ_back.Migrations
                     b.Navigation("Etablissement");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.FraisCatalogueEntity", b =>
+                {
+                    b.HasOne("erp_univ_back.Features.AnneeAcademique.AnneeAcademiqueEntity", "AnneeAcademique")
+                        .WithMany("FraisCatalogues")
+                        .HasForeignKey("AnneeAcademiqueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
+                        .WithMany("FraisCatalogues")
+                        .HasForeignKey("EtablissementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.FiliereNiveau.FiliereNiveauEntity", "FiliereNiveau")
+                        .WithMany("FraisCatalogues")
+                        .HasForeignKey("FiliereNiveauId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AnneeAcademique");
+
+                    b.Navigation("Etablissement");
+
+                    b.Navigation("FiliereNiveau");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.ModeleTrancheEntity", b =>
+                {
+                    b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
+                        .WithMany("ModelesTranches")
+                        .HasForeignKey("EtablissementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.ConfigFinancier.PlanPaiementEntity", "PlanPaiement")
+                        .WithMany("ModelesTranches")
+                        .HasForeignKey("PlanPaiementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Etablissement");
+
+                    b.Navigation("PlanPaiement");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.PlanPaiementEntity", b =>
+                {
+                    b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
+                        .WithMany("PlansPaiement")
+                        .HasForeignKey("EtablissementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.ConfigFinancier.FraisCatalogueEntity", "FraisCatalogue")
+                        .WithMany("PlansPaiement")
+                        .HasForeignKey("FraisCatalogueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Etablissement");
+
+                    b.Navigation("FraisCatalogue");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Etudiant.EtudiantEntity", b =>
                 {
                     b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
@@ -666,6 +1010,33 @@ namespace erp_univ_back.Migrations
                     b.Navigation("Niveau");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.Inscription.EcheanceEtudiantEntity", b =>
+                {
+                    b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
+                        .WithMany("EcheancesEtudiant")
+                        .HasForeignKey("EtablissementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.ConfigFinancier.FraisCatalogueEntity", "FraisCatalogue")
+                        .WithMany("Echeances")
+                        .HasForeignKey("FraisCatalogueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Inscription.InscriptionEntity", "Inscription")
+                        .WithMany("Echeances")
+                        .HasForeignKey("InscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Etablissement");
+
+                    b.Navigation("FraisCatalogue");
+
+                    b.Navigation("Inscription");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Inscription.InscriptionEntity", b =>
                 {
                     b.HasOne("erp_univ_back.Features.AnneeAcademique.AnneeAcademiqueEntity", "AnneeAcademique")
@@ -731,6 +1102,33 @@ namespace erp_univ_back.Migrations
                     b.Navigation("Etablissement");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.Paiement.TransactionPaiementEntity", b =>
+                {
+                    b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
+                        .WithMany("TransactionsPaiement")
+                        .HasForeignKey("EtablissementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Etudiant.EtudiantEntity", "Etudiant")
+                        .WithMany("TransactionsPaiement")
+                        .HasForeignKey("EtudiantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("erp_univ_back.Features.Inscription.InscriptionEntity", "Inscription")
+                        .WithMany("TransactionsPaiement")
+                        .HasForeignKey("InscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Etablissement");
+
+                    b.Navigation("Etudiant");
+
+                    b.Navigation("Inscription");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Professeur.ProfesseurEntity", b =>
                 {
                     b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
@@ -763,12 +1161,28 @@ namespace erp_univ_back.Migrations
 
             modelBuilder.Entity("erp_univ_back.Features.AnneeAcademique.AnneeAcademiqueEntity", b =>
                 {
+                    b.Navigation("FraisCatalogues");
+
                     b.Navigation("Inscriptions");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.FraisCatalogueEntity", b =>
+                {
+                    b.Navigation("Echeances");
+
+                    b.Navigation("PlansPaiement");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.PlanPaiementEntity", b =>
+                {
+                    b.Navigation("ModelesTranches");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.Etablissement.EtablissementEntity", b =>
                 {
                     b.Navigation("AnneeAcademiques");
+
+                    b.Navigation("EcheancesEtudiant");
 
                     b.Navigation("Etudiants");
 
@@ -776,15 +1190,23 @@ namespace erp_univ_back.Migrations
 
                     b.Navigation("Filieres");
 
+                    b.Navigation("FraisCatalogues");
+
                     b.Navigation("Inscriptions");
 
                     b.Navigation("Matieres");
+
+                    b.Navigation("ModelesTranches");
 
                     b.Navigation("Niveaux");
 
                     b.Navigation("Parents");
 
+                    b.Navigation("PlansPaiement");
+
                     b.Navigation("Professeurs");
+
+                    b.Navigation("TransactionsPaiement");
 
                     b.Navigation("UniteEnseignements");
                 });
@@ -794,6 +1216,8 @@ namespace erp_univ_back.Migrations
                     b.Navigation("EtudiantParents");
 
                     b.Navigation("Inscriptions");
+
+                    b.Navigation("TransactionsPaiement");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.Etudiant.ParentEntity", b =>
@@ -808,9 +1232,18 @@ namespace erp_univ_back.Migrations
 
             modelBuilder.Entity("erp_univ_back.Features.FiliereNiveau.FiliereNiveauEntity", b =>
                 {
+                    b.Navigation("FraisCatalogues");
+
                     b.Navigation("Inscriptions");
 
                     b.Navigation("UniteEnseignements");
+                });
+
+            modelBuilder.Entity("erp_univ_back.Features.Inscription.InscriptionEntity", b =>
+                {
+                    b.Navigation("Echeances");
+
+                    b.Navigation("TransactionsPaiement");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.Niveau.NiveauEntity", b =>

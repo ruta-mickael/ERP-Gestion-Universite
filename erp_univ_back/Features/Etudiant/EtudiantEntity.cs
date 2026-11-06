@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using erp_univ_back.Features.Etablissement;
 using erp_univ_back.Features.Inscription;
+using erp_univ_back.Features.Paiement;
 using erp_univ_back.Shared.Entities;
 
 namespace erp_univ_back.Features.Etudiant
@@ -58,6 +59,7 @@ namespace erp_univ_back.Features.Etudiant
 
         public ICollection<EtudiantParentEntity> EtudiantParents { get; set; } = [];
         public ICollection<InscriptionEntity> Inscriptions { get; set; } = [];
+        public ICollection<TransactionPaiementEntity> TransactionsPaiement { get; set; } = [];
     }
 
     [Table("parents")]

@@ -1,19 +1,20 @@
 namespace erp_univ_back.Shared.Data;
 
 using Microsoft.EntityFrameworkCore;
+using erp_univ_back.Features.AnneeAcademique;
+using erp_univ_back.Features.ConfigFinancier;
 using erp_univ_back.Features.Etablissement;
 using erp_univ_back.Features.Etudiant;
-using erp_univ_back.Shared.Services;
-using erp_univ_back.Features.Professeur;
-using erp_univ_back.Features.AnneeAcademique;
 using erp_univ_back.Features.Filiere;
-using erp_univ_back.Features.Niveau;
 using erp_univ_back.Features.FiliereNiveau;
 using erp_univ_back.Features.Inscription;
+using erp_univ_back.Features.Matiere;
+using erp_univ_back.Features.Niveau;
+using erp_univ_back.Features.Paiement;
+using erp_univ_back.Features.Professeur;
 using erp_univ_back.Features.UniteEnseignement;
 using erp_univ_back.Shared.Entities;
-using erp_univ_back.Features.Matiere;
-
+using erp_univ_back.Shared.Services;
 
 public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenantService _tenantService) : DbContext(options)
 {
@@ -29,12 +30,19 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
     public DbSet<InscriptionEntity> Inscriptions { get; set; } = null!;
     public DbSet<UniteEnseignementEntity> UniteEnseignements { get; set; } = null!;
     public DbSet<MatiereEntity> Matieres { get; set; } = null!;
+
+    // --- Module Financier & Paiement ---
+    public DbSet<FraisCatalogueEntity> FraisCatalogues { get; set; } = null!;
+    public DbSet<PlanPaiementEntity> PlansPaiement { get; set; } = null!;
+    public DbSet<ModeleTrancheEntity> ModelesTranches { get; set; } = null!;
+    public DbSet<EcheanceEtudiantEntity> EcheancesEtudiant { get; set; } = null!;
+    public DbSet<TransactionPaiementEntity> TransactionsPaiement { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
 
-        // --- 1. Établissement 
+        // --- 1. Établissement ---
         mb.Entity<EtablissementEntity>(e =>
         {
             e.HasKey(x => x.Id);
@@ -117,7 +125,7 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
 
             e.Property(x => x.Role)
                 .HasConversion<string>()
-                .HasMaxLength(10);
+                .HasMaxLength(20);
         });
 
         // --- 6. Année Académique ---
@@ -129,9 +137,6 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
             e.HasIndex(x => new { x.EtablissementId, x.Libelle }).IsUnique();
 
             e.Property(x => x.Libelle).HasMaxLength(15).IsRequired();
-            e.Property(x => x.DateDebut).IsRequired();
-            e.Property(x => x.DateFin).IsRequired();
-            e.Property(x => x.EstActive).IsRequired();
 
             e.HasOne(x => x.Etablissement)
                 .WithMany(x => x.AnneeAcademiques)
@@ -146,7 +151,8 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
             e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
 
             e.Property(x => x.Code).HasMaxLength(20).IsRequired();
-            e.Property(x => x.Nom).HasMaxLength(150).IsRequired();
+            e.Property(x => x.Nom).HasMaxLength(100).IsRequired();
+            e.Property(x => x.Description).HasMaxLength(250);
 
             e.HasIndex(x => new { x.EtablissementId, x.Code }).IsUnique();
 
@@ -162,7 +168,7 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
             e.HasKey(x => x.Id);
             e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
 
-            e.Property(x => x.Code).HasMaxLength(10).IsRequired();
+            e.Property(x => x.Code).HasMaxLength(20).IsRequired();
             e.Property(x => x.Nom).HasMaxLength(100).IsRequired();
             e.Property(x => x.Ordre).IsRequired();
 
@@ -174,7 +180,7 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // --- 9. FilièreNiveau (Jonction académique) ---
+        // --- 9. Filière-Niveau (Classe) ---
         mb.Entity<FiliereNiveauEntity>(e =>
         {
             e.HasKey(x => x.Id);
@@ -208,7 +214,11 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
 
             e.Property(x => x.Statut)
                 .HasConversion<string>()
-                .HasMaxLength(20);
+                .HasMaxLength(40);
+
+            e.Property(x => x.TypeInscription)
+                .HasConversion<string>()
+                .HasMaxLength(40);
 
             // Index unique composé anti-doublon (EtablissementId, EtudiantId, FiliereNiveauId, AnneeAcademiqueId)
             e.HasIndex(x => new { x.EtablissementId, x.EtudiantId, x.FiliereNiveauId, x.AnneeAcademiqueId }).IsUnique();
@@ -258,7 +268,7 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // --- 12. matieres ---
+        // --- 12. Matières ---
         mb.Entity<MatiereEntity>(e =>
         {
             e.HasKey(x => x.Id);
@@ -266,19 +276,153 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
 
             e.Property(x => x.Code).HasMaxLength(50).IsRequired();
             e.Property(x => x.Nom).HasMaxLength(150).IsRequired();
-            e.Property(x=>x.Coefficient).IsRequired();
+            e.Property(x => x.Coefficient).IsRequired();
 
             e.HasOne(x => x.Etablissement)
-            .WithMany(x => x.Matieres)
-            .HasForeignKey(x => x.EtablissementId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .WithMany(x => x.Matieres)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            e.HasOne(x=>x.UniteEnseignement)
-            .WithMany(x=>x.Matieres)
-            .HasForeignKey(x=>x.UniteEnseignementId)
-            .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.UniteEnseignement)
+                .WithMany(x => x.Matieres)
+                .HasForeignKey(x => x.UniteEnseignementId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
 
+        // --- 13. Frais Catalogue ---
+        mb.Entity<FraisCatalogueEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
 
+            e.Property(x => x.Libelle).HasMaxLength(150).IsRequired();
+            e.Property(x => x.MontantTotal).HasColumnType("decimal(18,2)").IsRequired();
+            e.Property(x => x.Categorie).HasConversion<string>().HasMaxLength(40);
+            e.Property(x => x.Cible).HasConversion<string>().HasMaxLength(40);
+            e.Property(x => x.MoyensPaiementAutorises).HasConversion<int>();
+
+            e.HasOne(x => x.Etablissement)
+                .WithMany(x => x.FraisCatalogues)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.AnneeAcademique)
+                .WithMany(x => x.FraisCatalogues)
+                .HasForeignKey(x => x.AnneeAcademiqueId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.FiliereNiveau)
+                .WithMany(x => x.FraisCatalogues)
+                .HasForeignKey(x => x.FiliereNiveauId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // --- 14. Plans Paiement ---
+        mb.Entity<PlanPaiementEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
+
+            e.Property(x => x.Nom).HasMaxLength(100).IsRequired();
+            e.Property(x => x.NombreTranches).IsRequired();
+            e.Property(x => x.EstActif).HasDefaultValue(true);
+
+            e.HasOne(x => x.Etablissement)
+                .WithMany(x => x.PlansPaiement)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.FraisCatalogue)
+                .WithMany(x => x.PlansPaiement)
+                .HasForeignKey(x => x.FraisCatalogueId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // --- 15. Modèles Tranches ---
+        mb.Entity<ModeleTrancheEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
+
+            e.Property(x => x.NumeroOrdre).IsRequired();
+            e.Property(x => x.Libelle).HasMaxLength(150).IsRequired();
+            e.Property(x => x.Montant).HasColumnType("decimal(18,2)").IsRequired();
+            e.Property(x => x.DateLimite).IsRequired();
+
+            e.HasOne(x => x.Etablissement)
+                .WithMany(x => x.ModelesTranches)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.PlanPaiement)
+                .WithMany(x => x.ModelesTranches)
+                .HasForeignKey(x => x.PlanPaiementId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // --- 16. Échéances Étudiant ---
+        mb.Entity<EcheanceEtudiantEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
+
+            e.Property(x => x.NumeroOrdre).IsRequired();
+            e.Property(x => x.Libelle).HasMaxLength(150).IsRequired();
+            e.Property(x => x.MontantAttendu).HasColumnType("decimal(18,2)").IsRequired();
+            e.Property(x => x.MontantDejaPaye).HasColumnType("decimal(18,2)").HasDefaultValue(0);
+            e.Property(x => x.DateLimite).IsRequired();
+            e.Property(x => x.Statut).HasConversion<string>().HasMaxLength(40);
+
+            e.HasOne(x => x.Etablissement)
+                .WithMany(x => x.EcheancesEtudiant)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Inscription)
+                .WithMany(x => x.Echeances)
+                .HasForeignKey(x => x.InscriptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.FraisCatalogue)
+                .WithMany(x => x.Echeances)
+                .HasForeignKey(x => x.FraisCatalogueId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // --- 17. Transactions Paiement ---
+        mb.Entity<TransactionPaiementEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasQueryFilter(x => x.EtablissementId == _tenantService.EtablissementId);
+
+            e.Property(x => x.Montant).HasColumnType("decimal(18,2)").IsRequired();
+            e.Property(x => x.MoyenPaiement).HasConversion<string>().HasMaxLength(40);
+            e.Property(x => x.NomBanque).HasMaxLength(50);
+            e.Property(x => x.ReferenceExterne).HasMaxLength(100);
+            e.Property(x => x.DateOperationDeclaree).IsRequired();
+            e.Property(x => x.PreuveImageUrl).HasMaxLength(500);
+            e.Property(x => x.StatutValidation).HasConversion<string>().HasMaxLength(40);
+            e.Property(x => x.MotifRejet).HasMaxLength(300);
+
+            // Index composite anti-fraude avec filtre excluant les ReferenceExterne nulles
+            e.HasIndex(x => new { x.EtablissementId, x.MoyenPaiement, x.NomBanque, x.ReferenceExterne })
+                .IsUnique()
+                .HasFilter("\"ReferenceExterne\" IS NOT NULL");
+
+            e.HasOne(x => x.Etablissement)
+                .WithMany(x => x.TransactionsPaiement)
+                .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Inscription)
+                .WithMany(x => x.TransactionsPaiement)
+                .HasForeignKey(x => x.InscriptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Etudiant)
+                .WithMany(x => x.TransactionsPaiement)
+                .HasForeignKey(x => x.EtudiantId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 

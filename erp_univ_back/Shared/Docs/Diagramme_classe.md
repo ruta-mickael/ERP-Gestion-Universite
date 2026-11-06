@@ -296,3 +296,30 @@ Ces deux champs ne sont **jamais confondus** dans les relations entre tables : t
 ---
 
 _Diagramme généré à partir du modèle consolidé de la conversation, reflétant les simplifications MVP actées dans le document des règles de gestion._
+1. Le module Financier (Scolarité et Paiements)
+Vous avez la table Inscriptions, mais l'inscription doit être validée par la caisse.
+
+Entités à créer : TypeFrais (droit d'inscription, écolage), Tranche (échéancier), et Paiement (la transaction).
+
+Objectif : Suivre les encaissements, gérer les tranches impayées et valider définitivement le statut de l'étudiant.
+
+2. L'Affectation Pédagogique (Professeur ↔ Matière)
+Vous avez la table Professeurs et la table Matieres, mais aucune relation entre les deux.
+
+Entités à créer : Affectation ou ProfesseurMatiere (table de jonction).
+
+Objectif : Assigner un enseignant à une matière pour une année académique donnée. C'est indispensable pour préparer les emplois du temps et calculer les heures à payer aux professeurs (vacations).
+
+3. Le module d'Évaluation (Examens et Notes)
+Vous avez le programme (Maquette) et les étudiants, il faut maintenant les évaluer.
+
+Entités à créer : Examen (ou Session d'examen) et Note.
+
+Objectif : Lier un étudiant, une matière et un score. C'est la base pour générer les relevés de notes et valider les passages en année supérieure.
+
+4. Le module de lecture complexe (Maquette Pédagogique)
+C'est un module VSA purement "Read Model". Vous n'avez aucune table à créer ici.
+
+Action : Développer le cas d'usage GetMaquetteComplete.
+
+Objectif : Utiliser .AsSplitQuery() pour récupérer la chaîne complète Filière ➔ Niveau ➔ UE ➔ Matière et l'envoyer au frontend en un seul JSON structuré pour l'affichage du catalogue.
