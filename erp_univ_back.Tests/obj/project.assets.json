@@ -5588,11 +5588,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\tsy lakilasy\\memoire\\erp_univ_back.Tests\\erp_univ_back.Tests.csproj",
+      "projectUniqueName": "D:\\tsy lakilasy\\memoire\\erp_univ_back.Tests\\erp_univ_back.Tests.csproj",
       "projectName": "erp_univ_back.Tests",
-      "projectPath": "d:\\tsy lakilasy\\memoire\\erp_univ_back.Tests\\erp_univ_back.Tests.csproj",
+      "projectPath": "D:\\tsy lakilasy\\memoire\\erp_univ_back.Tests\\erp_univ_back.Tests.csproj",
       "packagesPath": "C:\\Users\\rutam\\.nuget\\packages\\",
-      "outputPath": "d:\\tsy lakilasy\\memoire\\erp_univ_back.Tests\\obj\\",
+      "outputPath": "D:\\tsy lakilasy\\memoire\\erp_univ_back.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\rutam\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -5608,8 +5608,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "d:\\tsy lakilasy\\memoire\\erp_univ_back\\erp_univ_back.csproj": {
-              "projectPath": "d:\\tsy lakilasy\\memoire\\erp_univ_back\\erp_univ_back.csproj"
+            "D:\\tsy lakilasy\\memoire\\erp_univ_back\\erp_univ_back.csproj": {
+              "projectPath": "D:\\tsy lakilasy\\memoire\\erp_univ_back\\erp_univ_back.csproj"
             }
           }
         }

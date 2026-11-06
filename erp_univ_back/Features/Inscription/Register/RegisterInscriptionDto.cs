@@ -32,6 +32,8 @@ public record RegisterInscriptionResponse(
     Guid AnneeAcademiqueId,
     string AnneeAcademiqueLibelle,
     StatutInscription Statut,
-    DateTime DateCreation,
-    List<EcheanceItemResponse> Echeances = default!
-);
+    DateTime DateCreation
+)
+{
+    public List<EcheanceItemResponse> Echeances { get; init; } = [];
+}
