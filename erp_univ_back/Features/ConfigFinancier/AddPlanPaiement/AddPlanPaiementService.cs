@@ -53,7 +53,6 @@ public class AddPlanPaiementService(
         var plan = new PlanPaiementEntity
         {
             FraisCatalogueId = request.FraisCatalogueId,
-            FraisCatalogue = fraisCatalogue,
             Nom = request.Nom.Trim(),
             NombreTranches = request.Tranches.Count,
             EstActif = true
@@ -64,8 +63,6 @@ public class AddPlanPaiementService(
         {
             var tranche = new ModeleTrancheEntity
             {
-                PlanPaiementId = plan.Id,
-                PlanPaiement = plan,
                 NumeroOrdre = t.NumeroOrdre,
                 Libelle = t.Libelle.Trim(),
                 Montant = t.Montant,

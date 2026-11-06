@@ -94,8 +94,6 @@ public class RegisterInscriptionService(
         var inscription = new InscriptionEntity
         {
             Etudiant = etudiant,
-            FiliereNiveau = classe,
-            AnneeAcademique = annee,
             FiliereNiveauId = request.IdFiliereNiveau,
             AnneeAcademiqueId = request.IdAnneeAcademique,
             TypeInscription = TypeInscription.PremiereInscription,

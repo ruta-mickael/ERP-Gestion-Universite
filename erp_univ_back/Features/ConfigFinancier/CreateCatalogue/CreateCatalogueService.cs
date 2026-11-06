@@ -88,13 +88,9 @@ public class CreateCatalogueService(
         var entity = new FraisCatalogueEntity
         {
             AnneeAcademiqueId = request.AnneeAcademiqueId,
-            AnneeAcademique = anneeAcademique,
             CycleId = request.CycleId,
-            Cycle = cycle,
             FiliereId = request.FiliereId,
-            Filiere = filiere,
             NiveauId = request.NiveauId,
-            Niveau = niveau,
             Categorie = request.Categorie,
             Libelle = request.Libelle.Trim(),
             MontantTotal = request.MontantTotal,

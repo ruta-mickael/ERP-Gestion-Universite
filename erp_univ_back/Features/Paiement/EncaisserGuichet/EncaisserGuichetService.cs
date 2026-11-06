@@ -196,9 +196,7 @@ public class EncaisserGuichetService(
         var transaction = new TransactionPaiementEntity
         {
             InscriptionId = inscription.Id,
-            Inscription = inscription,
             EtudiantId = inscription.EtudiantId,
-            Etudiant = inscription.Etudiant,
             Montant = request.Montant,
             MoyenPaiement = request.MoyenPaiement,
             NomBanque = request.NomBanque,
