@@ -28,7 +28,8 @@ public class RegisterInscriptionService(
             throw new BadRequestException(firstError);
         }
 
-        var annee = await db.AnneeAcademiques.FirstOrDefaultAsync(a => a.Id == request.IdAnneeAcademique, ct) ?? throw new NotFoundException($"L'année académique avec l'identifiant '{request.IdAnneeAcademique}' n'existe pas.");
+        var annee = await db.AnneeAcademiques.FirstOrDefaultAsync(a => a.Id == request.IdAnneeAcademique, ct)
+            ?? throw new NotFoundException($"L'année académique avec l'identifiant '{request.IdAnneeAcademique}' n'existe pas.");
 
         if (!annee.EstActive)
         {
@@ -37,8 +38,10 @@ public class RegisterInscriptionService(
 
         var classe = await db.FiliereNiveaux
             .Include(fn => fn.Niveau)
+                .ThenInclude(n => n.Cycle)
             .Include(fn => fn.Filiere)
             .FirstOrDefaultAsync(fn => fn.Id == request.IdFiliereNiveau, ct);
+
         if (classe is null)
         {
             throw new NotFoundException($"La classe (filière-niveau) avec l'identifiant '{request.IdFiliereNiveau}' n'existe pas.");
@@ -91,12 +94,72 @@ public class RegisterInscriptionService(
         var inscription = new InscriptionEntity
         {
             Etudiant = etudiant,
-            FiliereNiveau = classe,
-            AnneeAcademique = annee,
             FiliereNiveauId = request.IdFiliereNiveau,
             AnneeAcademiqueId = request.IdAnneeAcademique,
+            TypeInscription = TypeInscription.PremiereInscription,
             Statut = StatutInscription.Inscrit
         };
+
+        // --- Génération de l'échéancier si des plans de paiement sont choisis ---
+        if (request.PlansPaiementIds != null && request.PlansPaiementIds.Count > 0)
+        {
+            var distinctPlanIds = request.PlansPaiementIds.Distinct().ToList();
+            var plans = await db.PlansPaiement
+                .Include(p => p.FraisCatalogue)
+                .Include(p => p.ModelesTranches)
+                .Where(p => distinctPlanIds.Contains(p.Id))
+                .ToListAsync(ct);
+
+            if (plans.Count != distinctPlanIds.Count)
+            {
+                throw new NotFoundException("Un ou plusieurs plans de paiement spécifiés n'existent pas.");
+            }
+
+            foreach (var plan in plans)
+            {
+                if (!plan.EstActif)
+                {
+                    throw new BadRequestException($"Le plan de paiement '{plan.Nom}' est inactif.");
+                }
+
+                if (plan.FraisCatalogue.AnneeAcademiqueId != request.IdAnneeAcademique)
+                {
+                    throw new BadRequestException($"Le plan de paiement '{plan.Nom}' n'appartient pas à l'année académique de l'inscription.");
+                }
+
+                // Vérification du ciblage du frais (Cycle, Filière, Niveau)
+                var frais = plan.FraisCatalogue;
+                bool correspondCycle = !frais.CycleId.HasValue || (classe.Niveau.CycleId.HasValue && frais.CycleId == classe.Niveau.CycleId);
+                bool correspondFiliere = !frais.FiliereId.HasValue || frais.FiliereId == classe.FiliereId;
+                bool correspondNiveau = !frais.NiveauId.HasValue || frais.NiveauId == classe.NiveauId;
+
+                if (!correspondCycle || !correspondFiliere || !correspondNiveau)
+                {
+                    throw new BadRequestException($"Le plan de paiement '{plan.Nom}' est associé à un frais qui ne s'applique pas à la classe '{classe.LibelleAffiche ?? classe.Niveau.Code}'.");
+                }
+
+                // Génération des échéances réelles pour l'étudiant
+                foreach (var tranche in plan.ModelesTranches.OrderBy(t => t.NumeroOrdre))
+                {
+                    var echeance = new EcheanceEtudiantEntity
+                    {
+                        Inscription = inscription,
+                        FraisCatalogueId = plan.FraisCatalogueId,
+                        NumeroOrdre = tranche.NumeroOrdre,
+                        Libelle = tranche.Libelle,
+                        MontantAttendu = tranche.Montant,
+                        MontantDejaPaye = 0m,
+                        DateLimite = tranche.DateLimite,
+                        ExigePourValiderInscription = tranche.ExigePourValiderInscription,
+                        Statut = StatutEcheance.NonPaye
+                    };
+                    inscription.Echeances.Add(echeance);
+                }
+            }
+
+            bool exigePaiement = inscription.Echeances.Any(e => e.ExigePourValiderInscription);
+            inscription.Statut = exigePaiement ? StatutInscription.EnAttentePaiement : StatutInscription.Validee;
+        }
 
         db.Inscriptions.Add(inscription);
 

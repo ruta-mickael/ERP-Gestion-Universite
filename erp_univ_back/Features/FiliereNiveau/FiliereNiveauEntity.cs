@@ -3,6 +3,7 @@ namespace erp_univ_back.Features.FiliereNiveau;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using erp_univ_back.Features.Etablissement;
+using erp_univ_back.Features.Evaluation;
 using erp_univ_back.Features.Filiere;
 using erp_univ_back.Features.Inscription;
 using erp_univ_back.Features.Niveau;
@@ -26,5 +27,5 @@ public class FiliereNiveauEntity : BaseEntity
 
     public ICollection<InscriptionEntity> Inscriptions { get; set; } = [];
     public ICollection<UniteEnseignementEntity> UniteEnseignements { get; set; } = [];
+    public ICollection<EvaluationEntity> Evaluations { get; set; } = [];
 }
-

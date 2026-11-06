@@ -16,5 +16,10 @@ public class RegisterInscriptionValidator : AbstractValidator<RegisterInscriptio
 
         RuleFor(x => x.IdFiliereNiveau)
             .NotEmpty().WithMessage("L'identifiant de la classe (filière/niveau) est obligatoire.");
+
+        RuleForEach(x => x.PlansPaiementIds)
+            .Must(id => id != Guid.Empty)
+            .When(x => x.PlansPaiementIds != null)
+            .WithMessage("L'identifiant du plan de paiement ne peut pas être vide.");
     }
 }

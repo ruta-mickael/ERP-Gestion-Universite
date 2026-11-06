@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using erp_univ_back.Features.Etablissement;
+using erp_univ_back.Features.Evaluation;
 using erp_univ_back.Features.FiliereNiveau;
 using erp_univ_back.Features.UniteEnseignement;
 using erp_univ_back.Shared.Entities;
@@ -28,4 +29,6 @@ public class MatiereEntity : BaseEntity
     [Required]
     public required Guid EtablissementId {get;set;}
     public EtablissementEntity Etablissement {get;set;} = null!;
+
+    public ICollection<EvaluationEntity> Evaluations { get; set; } = [];
 }
