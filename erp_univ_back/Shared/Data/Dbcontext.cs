@@ -25,6 +25,7 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
     public DbSet<ProfesseurEntity> Professeurs { get; set; } = null!;
     public DbSet<AnneeAcademiqueEntity> AnneeAcademiques { get; set; } = null!;
     public DbSet<FiliereEntity> Filieres { get; set; } = null!;
+    public DbSet<CycleEntity> Cycles { get; set; } = null!;
     public DbSet<NiveauEntity> Niveaux { get; set; } = null!;
     public DbSet<FiliereNiveauEntity> FiliereNiveaux { get; set; } = null!;
     public DbSet<InscriptionEntity> Inscriptions { get; set; } = null!;
@@ -162,7 +163,48 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // --- 8. Niveau ---
+        // --- 8. Cycle ---
+        mb.Entity<CycleEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Code).HasMaxLength(20).IsRequired();
+            e.Property(x => x.Nom).HasMaxLength(100).IsRequired();
+            e.Property(x => x.Ordre).IsRequired();
+
+            e.HasIndex(x => x.Code).IsUnique();
+
+            e.HasData(
+                new CycleEntity
+                {
+                    Id = CycleEntity.LicenceId,
+                    Code = "LICENCE",
+                    Nom = "Licence",
+                    Ordre = 1,
+                    DateCreation = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    DateModification = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new CycleEntity
+                {
+                    Id = CycleEntity.MasterId,
+                    Code = "MASTER",
+                    Nom = "Master",
+                    Ordre = 2,
+                    DateCreation = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    DateModification = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new CycleEntity
+                {
+                    Id = CycleEntity.DoctoratId,
+                    Code = "DOCTORAT",
+                    Nom = "Doctorat",
+                    Ordre = 3,
+                    DateCreation = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    DateModification = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
+        });
+
+        // --- 9. Niveau ---
         mb.Entity<NiveauEntity>(e =>
         {
             e.HasKey(x => x.Id);
@@ -177,6 +219,11 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
             e.HasOne(x => x.Etablissement)
                 .WithMany(x => x.Niveaux)
                 .HasForeignKey(x => x.EtablissementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Cycle)
+                .WithMany(x => x.Niveaux)
+                .HasForeignKey(x => x.CycleId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -298,7 +345,6 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
             e.Property(x => x.Libelle).HasMaxLength(150).IsRequired();
             e.Property(x => x.MontantTotal).HasColumnType("decimal(18,2)").IsRequired();
             e.Property(x => x.Categorie).HasConversion<string>().HasMaxLength(40);
-            e.Property(x => x.Cible).HasConversion<string>().HasMaxLength(40);
             e.Property(x => x.MoyensPaiementAutorises).HasConversion<int>();
 
             e.HasOne(x => x.Etablissement)
@@ -311,9 +357,19 @@ public class ErpUnivDbContext(DbContextOptions<ErpUnivDbContext> options, ITenan
                 .HasForeignKey(x => x.AnneeAcademiqueId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            e.HasOne(x => x.FiliereNiveau)
+            e.HasOne(x => x.Cycle)
                 .WithMany(x => x.FraisCatalogues)
-                .HasForeignKey(x => x.FiliereNiveauId)
+                .HasForeignKey(x => x.CycleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Filiere)
+                .WithMany(x => x.FraisCatalogues)
+                .HasForeignKey(x => x.FiliereId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(x => x.Niveau)
+                .WithMany(x => x.FraisCatalogues)
+                .HasForeignKey(x => x.NiveauId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 

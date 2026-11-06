@@ -73,10 +73,8 @@ namespace erp_univ_back.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("character varying(40)");
 
-                    b.Property<string>("Cible")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)");
+                    b.Property<Guid?>("CycleId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("timestamp with time zone");
@@ -90,7 +88,7 @@ namespace erp_univ_back.Migrations
                     b.Property<Guid>("EtablissementId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("FiliereNiveauId")
+                    b.Property<Guid?>("FiliereId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Libelle")
@@ -104,13 +102,20 @@ namespace erp_univ_back.Migrations
                     b.Property<int>("MoyensPaiementAutorises")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("NiveauId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AnneeAcademiqueId");
 
+                    b.HasIndex("CycleId");
+
                     b.HasIndex("EtablissementId");
 
-                    b.HasIndex("FiliereNiveauId");
+                    b.HasIndex("FiliereId");
+
+                    b.HasIndex("NiveauId");
 
                     b.ToTable("frais_catalogue");
                 });
@@ -637,6 +642,68 @@ namespace erp_univ_back.Migrations
                     b.ToTable("Matieres");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.Niveau.CycleEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModification")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Ordre")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("cycles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Code = "LICENCE",
+                            DateCreation = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DateModification = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nom = "Licence",
+                            Ordre = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Code = "MASTER",
+                            DateCreation = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DateModification = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nom = "Master",
+                            Ordre = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Code = "DOCTORAT",
+                            DateCreation = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DateModification = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nom = "Doctorat",
+                            Ordre = 3
+                        });
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Niveau.NiveauEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -647,6 +714,9 @@ namespace erp_univ_back.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<Guid?>("CycleId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("timestamp with time zone");
@@ -666,6 +736,8 @@ namespace erp_univ_back.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CycleId");
 
                     b.HasIndex("EtablissementId", "Code")
                         .IsUnique();
@@ -875,22 +947,36 @@ namespace erp_univ_back.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("erp_univ_back.Features.Niveau.CycleEntity", "Cycle")
+                        .WithMany("FraisCatalogues")
+                        .HasForeignKey("CycleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
                         .WithMany("FraisCatalogues")
                         .HasForeignKey("EtablissementId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("erp_univ_back.Features.FiliereNiveau.FiliereNiveauEntity", "FiliereNiveau")
+                    b.HasOne("erp_univ_back.Features.Filiere.FiliereEntity", "Filiere")
                         .WithMany("FraisCatalogues")
-                        .HasForeignKey("FiliereNiveauId")
+                        .HasForeignKey("FiliereId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("erp_univ_back.Features.Niveau.NiveauEntity", "Niveau")
+                        .WithMany("FraisCatalogues")
+                        .HasForeignKey("NiveauId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("AnneeAcademique");
 
+                    b.Navigation("Cycle");
+
                     b.Navigation("Etablissement");
 
-                    b.Navigation("FiliereNiveau");
+                    b.Navigation("Filiere");
+
+                    b.Navigation("Niveau");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.ConfigFinancier.ModeleTrancheEntity", b =>
@@ -1093,11 +1179,18 @@ namespace erp_univ_back.Migrations
 
             modelBuilder.Entity("erp_univ_back.Features.Niveau.NiveauEntity", b =>
                 {
+                    b.HasOne("erp_univ_back.Features.Niveau.CycleEntity", "Cycle")
+                        .WithMany("Niveaux")
+                        .HasForeignKey("CycleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("erp_univ_back.Features.Etablissement.EtablissementEntity", "Etablissement")
                         .WithMany("Niveaux")
                         .HasForeignKey("EtablissementId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Cycle");
 
                     b.Navigation("Etablissement");
                 });
@@ -1228,12 +1321,12 @@ namespace erp_univ_back.Migrations
             modelBuilder.Entity("erp_univ_back.Features.Filiere.FiliereEntity", b =>
                 {
                     b.Navigation("FiliereNiveaux");
+
+                    b.Navigation("FraisCatalogues");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.FiliereNiveau.FiliereNiveauEntity", b =>
                 {
-                    b.Navigation("FraisCatalogues");
-
                     b.Navigation("Inscriptions");
 
                     b.Navigation("UniteEnseignements");
@@ -1246,9 +1339,18 @@ namespace erp_univ_back.Migrations
                     b.Navigation("TransactionsPaiement");
                 });
 
+            modelBuilder.Entity("erp_univ_back.Features.Niveau.CycleEntity", b =>
+                {
+                    b.Navigation("FraisCatalogues");
+
+                    b.Navigation("Niveaux");
+                });
+
             modelBuilder.Entity("erp_univ_back.Features.Niveau.NiveauEntity", b =>
                 {
                     b.Navigation("FiliereNiveaux");
+
+                    b.Navigation("FraisCatalogues");
                 });
 
             modelBuilder.Entity("erp_univ_back.Features.UniteEnseignement.UniteEnseignementEntity", b =>

@@ -12,13 +12,6 @@ public enum CategorieFrais
     Autre
 }
 
-public enum CibleEtudiant
-{
-    Tous,
-    NouveauxUniquement,
-    AnciensUniquement
-}
-
 [Flags]
 public enum MoyenPaiement
 {

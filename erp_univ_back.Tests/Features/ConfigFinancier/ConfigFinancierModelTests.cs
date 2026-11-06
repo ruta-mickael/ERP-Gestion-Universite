@@ -6,6 +6,7 @@ using erp_univ_back.Features.Etablissement;
 using erp_univ_back.Features.Etudiant;
 using erp_univ_back.Features.FiliereNiveau;
 using erp_univ_back.Features.Inscription;
+using erp_univ_back.Features.Niveau;
 using erp_univ_back.Features.Paiement;
 using erp_univ_back.Shared.Data;
 using erp_univ_back.Shared.Services;
@@ -72,8 +73,8 @@ public class ConfigFinancierModelTests
             Id = Guid.NewGuid(),
             EtablissementId = etabId,
             AnneeAcademiqueId = annee.Id,
+            CycleId = CycleEntity.LicenceId,
             Categorie = CategorieFrais.FraisFormation,
-            Cible = CibleEtudiant.Tous,
             Libelle = "Écolage Annuel L1",
             MontantTotal = 1200000.00m,
             MoyensPaiementAutorises = MoyenPaiement.Especes | MoyenPaiement.MVola | MoyenPaiement.VersementBancaire,

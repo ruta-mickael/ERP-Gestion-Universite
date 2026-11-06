@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using erp_univ_back.Features.ConfigFinancier;
 using erp_univ_back.Features.Etablissement;
 using erp_univ_back.Features.FiliereNiveau;
 using erp_univ_back.Shared.Entities;
@@ -28,5 +29,6 @@ namespace erp_univ_back.Features.Filiere
         public EtablissementEntity Etablissement { get; set; } = null!;
 
         public ICollection<FiliereNiveauEntity> FiliereNiveaux { get; set; } = [];
+        public ICollection<FraisCatalogueEntity> FraisCatalogues { get; set; } = [];
     }
 }

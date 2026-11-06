@@ -2,8 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using erp_univ_back.Features.AnneeAcademique;
 using erp_univ_back.Features.Etablissement;
-using erp_univ_back.Features.FiliereNiveau;
+using erp_univ_back.Features.Filiere;
 using erp_univ_back.Features.Inscription;
+using erp_univ_back.Features.Niveau;
 using erp_univ_back.Shared.Entities;
 
 namespace erp_univ_back.Features.ConfigFinancier;
@@ -17,11 +18,17 @@ public class FraisCatalogueEntity : BaseEntity
     public Guid AnneeAcademiqueId { get; set; }
     public AnneeAcademiqueEntity AnneeAcademique { get; set; } = null!;
 
-    public Guid? FiliereNiveauId { get; set; }
-    public FiliereNiveauEntity? FiliereNiveau { get; set; }
+    // --- Ciblage modulaire ---
+    public Guid? CycleId { get; set; }
+    public CycleEntity? Cycle { get; set; }
+
+    public Guid? FiliereId { get; set; }
+    public FiliereEntity? Filiere { get; set; }
+
+    public Guid? NiveauId { get; set; }
+    public NiveauEntity? Niveau { get; set; }
 
     public CategorieFrais Categorie { get; set; }
-    public CibleEtudiant Cible { get; set; }
 
     [Required]
     [MaxLength(150)]
