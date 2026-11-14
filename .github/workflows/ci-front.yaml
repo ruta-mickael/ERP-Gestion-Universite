@@ -1,0 +1,49 @@
+name: Frontend CI (Angular)
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'erp_univ_front/**'
+      - '.github/workflows/ci-front.yaml'
+  
+  pull_request:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'erp_univ_front/**'
+      - '.github/workflows/ci-front.yaml'
+
+defaults:
+  run:
+    working-directory: erp_univ_front
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout du code
+      uses: actions/checkout@v4
+
+    - name: Configuration de Node.js 26
+      uses: actions/setup-node@v4
+      with:
+        node-version: '26.13.x'
+        cache: 'npm'
+        cache-dependency-path: 'erp_univ_front/package-lock.json'
+
+    - name: Installation des dépendances
+      run: npm ci
+
+    - name: Exécution des tests unitaires
+      run: npm test -- --watch=false
+
+    - name: Compilation pour la production
+      run: npm run build -- --configuration production
+
+    - name: Archivage des artefacts de build
+      uses: actions/upload-artifact@v4
+      with:
+        name: erp-univ-front-dist
+        path: erp_univ_front/dist/erp_univ_front
+        retention-days: 7
