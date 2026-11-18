@@ -1,0 +1,126 @@
+<hlm-sidebar side="left" variant="sidebar" collapsible="icon">
+  
+  <!-- En-tête : Icône et Nom de l'Université (Statique) -->
+  <div hlmSidebarHeader class="border-b border-sidebar-border p-3">
+    <div class="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
+        <ng-icon name="lucideGraduationCap" size="1.5rem" class="size-6! text-2xl!" />
+      </div>
+      <div class="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
+        <span class="truncate text-sm font-semibold tracking-tight text-sidebar-foreground">
+          Université Polytechnique
+        </span>
+        <span class="truncate text-xs text-sidebar-foreground/70">
+          Portail ERP Universitaire
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu : Éléments du menu regroupés avec Spartan UI -->
+  <div hlmSidebarContent class="px-2 py-2">
+    
+    <!-- Groupe 1 : Vue Générale -->
+    <div hlmSidebarGroup>
+      <div hlmSidebarGroupLabel class="text-xs font-semibold tracking-wider text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">VUE GÉNÉRALE</div>
+      <div hlmSidebarGroupContent>
+        <ul hlmSidebarMenu>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/dashboard" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideLayoutDashboard" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Tableau de bord</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Groupe 2 : Scolarité -->
+    <div hlmSidebarGroup>
+      <div hlmSidebarGroupLabel class="text-xs font-semibold tracking-wider text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">SCOLARITÉ</div>
+      <div hlmSidebarGroupContent>
+        <ul hlmSidebarMenu>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/etudiants" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideUsers" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Étudiants</span>
+            </a>
+          </li>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/professeurs" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideUserCheck" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Professeurs</span>
+            </a>
+          </li>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/filieres" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideBookOpen" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Filières & Maquettes</span>
+            </a>
+          </li>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/notes" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideAward" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Notes & Examens</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Groupe 3 : Inscriptions -->
+    <div hlmSidebarGroup>
+      <div hlmSidebarGroupLabel class="text-xs font-semibold tracking-wider text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">INSCRIPTIONS</div>
+      <div hlmSidebarGroupContent>
+        <ul hlmSidebarMenu>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/inscriptions" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideUserPlus" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Inscriptions Annuelles</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Groupe 4 : Finances -->
+    <div hlmSidebarGroup>
+      <div hlmSidebarGroupLabel class="text-xs font-semibold tracking-wider text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">FINANCES</div>
+      <div hlmSidebarGroupContent>
+        <ul hlmSidebarMenu>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/finances/ecolages" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideCreditCard" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Écolages & Frais</span>
+            </a>
+          </li>
+          <li hlmSidebarMenuItem>
+            <a hlmSidebarMenuButton routerLink="/finances/paiements" routerLinkActive="data-[active=true]" class="gap-3 h-10 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:mx-auto! [&_ng-icon]:size-5! [&_ng-icon]:text-[1.25rem]!">
+              <ng-icon name="lucideReceipt" size="1.25rem" class="size-5!" />
+              <span class="font-medium group-data-[collapsible=icon]:hidden">Paiements</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pied de la Sidebar : La personne connectée -->
+  <div hlmSidebarFooter class="border-t border-sidebar-border p-3">
+    <div class="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-700">
+        <ng-icon name="lucideCircleUser" size="1.5rem" class="size-6! text-2xl!" />
+      </div>
+      <div class="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
+        <span class="truncate text-xs font-semibold text-sidebar-foreground">
+          Dr. RAKOTO Jean
+        </span>
+        <span class="truncate text-[11px] text-sidebar-foreground/70">
+          Administrateur
+        </span>
+      </div>
+    </div>
+  </div>
+
+</hlm-sidebar>
